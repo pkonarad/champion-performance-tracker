@@ -23,3 +23,12 @@ PLATFORM_TO_REGION = {
 
 DEFAULT_PLATFORM = "na1"
 MATCH_COUNT = 50  # how many recent matches to analyze
+
+# Only these queues are analyzed. Other modes (ARAM, Arena, Swiftplay,
+# Quickplay, URF, bots...) play too differently to mix into the same stats.
+# Ids: https://static.developer.riotgames.com/docs/lol/queues.json
+ALLOWED_QUEUES = {
+    400: "Normal Draft",
+    420: "Ranked Solo/Duo",
+    440: "Ranked Flex",
+}

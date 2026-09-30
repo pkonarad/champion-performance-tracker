@@ -12,7 +12,7 @@ import asyncio
 import httpx
 from fastapi import HTTPException
 
-from .config import RIOT_API_KEY, PLATFORM_TO_REGION
+from .config import ALLOWED_QUEUES, RIOT_API_KEY, PLATFORM_TO_REGION
 
 # Very small in-memory cache: match_id -> match json.
 # Fine for a portfolio project / dev key usage; swap for redis/sqlite
@@ -70,11 +70,23 @@ async def get_puuid(game_name: str, tag_line: str, platform: str) -> str:
 
 
 async def get_match_ids(puuid: str, platform: str, count: int) -> list[str]:
+    """Most recent `count` match ids across ALLOWED_QUEUES. The endpoint only
+    filters by one queue per call, so ask each queue for `count` ids and
+    keep the newest overall."""
     region = region_for_platform(platform)
     url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
     async with httpx.AsyncClient(timeout=10) as client:
-        data = await _get(client, url, params={"start": 0, "count": count})
-    return data
+        pages = await asyncio.gather(*(
+            _get(client, url, params={"start": 0, "count": count, "queue": queue})
+            for queue in ALLOWED_QUEUES
+        ))
+    # Ids look like "NA1_5012345678"; the number increases over time.
+    ids = sorted({mid for page in pages for mid in page}, key=_match_number, reverse=True)
+    return ids[:count]
+
+
+def _match_number(match_id: str) -> int:
+    return int(match_id.rsplit("_", 1)[-1])
 
 
 async def get_match(match_id: str, platform: str) -> dict:

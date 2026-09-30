@@ -38,7 +38,7 @@ export default function App() {
         <div className="results">
           <div className="results-header">
             <h2>{data.riotId}</h2>
-            <span className="meta">{data.matchesAnalyzed} matches analyzed · {data.platform.toUpperCase()}</span>
+            <span className="meta">{data.matchesAnalyzed} ranked &amp; normal draft games ·{data.platform.toUpperCase()}</span>
           </div>
 
           <TopStats highlights={data.highlights} />

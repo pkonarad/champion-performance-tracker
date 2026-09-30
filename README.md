@@ -1,6 +1,7 @@
 # Champion Performance Tracker
 
-**Live site:** _coming soon_ <!-- replace with the Render URL once deployed -->
+**Live site:** https://champion-performance-tracker.onrender.com
+(free hosting: the first load after a quiet period can take ~30–60s)
 
 Enter any League of Legends Riot ID and see how that player performs on each
 champion they play, from overall win rate down to how much CS they're getting
@@ -10,7 +11,7 @@ at each stage of the game.
 
 ## Features
 
-- **Individual champion stats** from the player's last 50 games: win rate, KDA,
+- **Individual champion stats** from the player's last 50 ranked and normal draft games: win rate, KDA,
   CS/min, damage/min, gold/min, vision score. Sortable by any column.
 - **CS by game phase:** CS/min for 0–15, 15–25, and 25+ minutes.
 - **CS per minute chart:** average CS gained in each minute of the game.
@@ -23,7 +24,8 @@ at each stage of the game.
 ## How it works
 
 ```
-Riot ID  -->  Account-V1 (PUUID)  -->  Match-V5 match ids (last 50)
+Riot ID  -->  Account-V1 (PUUID)  -->  Match-V5 match ids (last 50 per queue:
+                                         draft, solo/duo, flex; newest 50 kept)
                                               |
                                   Match-V5 match details (concurrent)
                                               |
@@ -42,6 +44,10 @@ Riot ID  -->  Account-V1 (PUUID)  -->  Match-V5 match ids (last 50)
 
 A few details worth noting:
 
+- Only Normal Draft, Ranked Solo/Duo, and Ranked Flex games are analyzed.
+  ARAM, Arena, Swiftplay, and other modes play too differently to share
+  stats with Summoner's Rift draft games. The allowed queues are listed in
+  `backend/app/config.py`.
 - Timelines are fetched only when a champion is expanded, so the initial
   lookup stays within Riot's rate limits.
 - Riot only snapshots gold once a minute, so unspent gold at death is

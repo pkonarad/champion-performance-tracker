@@ -45,7 +45,7 @@ async def get_player_champion_stats(
     match_ids = await riot_client.get_match_ids(puuid, platform, count)
 
     if not match_ids:
-        raise HTTPException(status_code=404, detail="No recent matches found for this player.")
+        raise HTTPException(status_code=404, detail="No recent ranked or normal draft games found for this player.")
 
     matches = await riot_client.get_matches(match_ids, platform)
     rows = aggregate_by_champion(matches, puuid)
