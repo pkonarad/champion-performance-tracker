@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: champion-performance-tracker
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: RIOT_API_KEY
+        sync: false  # set the value in the Render dashboard, not in git
